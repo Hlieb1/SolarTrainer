@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class CollisionReporter : MonoBehaviour
 {
-    public float minImpactSpeed = 0.5f;
+    const float MinImpactSpeed = 0.2f;
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.relativeVelocity.magnitude < minImpactSpeed || collision.GetContact(0).normal.y > 0.7f)
+        if (collision.relativeVelocity.magnitude < MinImpactSpeed || collision.GetContact(0).normal.y > 0.7f)
             return;
 
         var panel = collision.gameObject.GetComponentInParent<SolarPanel>();
