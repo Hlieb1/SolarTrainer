@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Lab1_Workshop.unity
     guid: af90dbdafa2cb504e8b23f10f3898044
+  - enabled: 1
+    path: Assets/Scenes/SolarTrainer.unity
+    guid: 05413940decdec0408118f787a455933
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: bd71b735f03bb6740a435b240709f6e4, type: 2}
