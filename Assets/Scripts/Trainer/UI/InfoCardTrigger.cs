@@ -40,6 +40,8 @@ public class InfoCardTrigger : MonoBehaviour
 
     void OnStateChanged(InteractableStateChangeArgs args)
     {
+        if (card == null)
+            return;
         if (args.NewState == InteractableState.Select)
             _pinned = !_pinned;
         _hovered = args.NewState == InteractableState.Hover || args.NewState == InteractableState.Select;
@@ -59,7 +61,7 @@ public class InfoCardTrigger : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!card.activeSelf || _head == null)
+        if (card == null || !card.activeSelf || _head == null)
             return;
         card.transform.position = transform.position + Vector3.up * height;
         card.transform.rotation = Quaternion.LookRotation(card.transform.position - _head.position);

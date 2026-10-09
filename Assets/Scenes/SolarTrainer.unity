@@ -11425,7 +11425,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 812768308}
   _surface: {fileID: 812768312}
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 0}
@@ -12385,7 +12385,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 91034113}
   _surface: {fileID: 872458773}
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 0}
@@ -19888,7 +19888,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 1239190277}
   _surface: {fileID: 1518370677}
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 0}
@@ -26467,7 +26467,7 @@ MonoBehaviour:
   _maxInteractors: -1
   _maxSelectingInteractors: -1
   _data: {fileID: 0}
-  _pointableElement: {fileID: 0}
+  _pointableElement: {fileID: 247367575}
   _surface: {fileID: 1934312590}
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 0}
