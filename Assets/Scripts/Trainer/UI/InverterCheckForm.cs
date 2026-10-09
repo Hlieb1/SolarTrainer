@@ -37,6 +37,7 @@ public class InverterCheckForm : MonoBehaviour
         temperatureSlider.onValueChanged.AddListener(v => temperatureValue.text = $"{v:0} °C");
         saveButton.onClick.AddListener(Save);
         resetButton.onClick.AddListener(ResetValues);
+        TabletKeyboard.Attach(inspectorInput, (RectTransform)transform);
     }
 
     void Start()
