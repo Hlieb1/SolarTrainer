@@ -27,6 +27,7 @@ public class ArcTeleportLocomotion : MonoBehaviour
 
     State _state = State.Idle;
     Vector3? _destination;
+    Vector3 _aimHeadStart;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Bootstrap()
@@ -95,18 +96,20 @@ public class ArcTeleportLocomotion : MonoBehaviour
 
     void Update()
     {
-        float stickY = Mathf.Max(
-            OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.RTouch).y,
-            OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.LTouch).y);
+        float stickY = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.RTouch).y;
 
         switch (_state)
         {
             case State.Idle:
                 if (stickY > pressThreshold)
+                {
                     _state = State.Aiming;
+                    _aimHeadStart = _rig.centerEyeAnchor.position;
+                }
                 break;
 
             case State.Aiming:
+                HoldPlayerInPlace();
                 if (stickY < releaseThreshold)
                 {
                     _state = State.Idle;
@@ -118,6 +121,20 @@ public class ArcTeleportLocomotion : MonoBehaviour
                 Aim(_rig.rightControllerAnchor);
                 break;
         }
+    }
+
+    void HoldPlayerInPlace()
+    {
+        if (_locomotor == null)
+            return;
+
+        Vector3 drift = _rig.centerEyeAnchor.position - _aimHeadStart;
+        drift.y = 0f;
+        if (drift.sqrMagnitude < 0.000001f)
+            return;
+
+        _locomotor.HandleLocomotionEvent(new LocomotionEvent(TeleportEventId, new Pose(-drift, Quaternion.identity),
+            LocomotionEvent.TranslationType.Relative, LocomotionEvent.RotationType.None));
     }
 
     void Aim(Transform hand)

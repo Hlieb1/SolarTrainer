@@ -11,9 +11,25 @@ public class MountablePanel : MonoBehaviour
     public PanelMountSlot Slot { get; set; }
     public Rigidbody Body => body;
 
+    Vector3 _homePosition;
+    Quaternion _homeRotation;
+
     void Awake()
     {
         Info = GetComponent<SolarPanel>();
+        _homePosition = transform.position;
+        _homeRotation = transform.rotation;
+    }
+
+    void Update()
+    {
+        if (transform.position.y > -1f || grabbable.SelectingPointsCount > 0)
+            return;
+        body.linearVelocity = Vector3.zero;
+        body.angularVelocity = Vector3.zero;
+        body.position = _homePosition;
+        body.rotation = _homeRotation;
+        transform.SetPositionAndRotation(_homePosition, _homeRotation);
     }
 
     void OnEnable()
