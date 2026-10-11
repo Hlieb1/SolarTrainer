@@ -16,7 +16,28 @@ public class InspectionWizard : MonoBehaviour
         public int correct;
     }
 
+    [Serializable]
+    class WizardReport
+    {
+        public string sessionId;
+        public string wizard;
+        public string finishedAt;
+        public float durationSeconds;
+        public int score;
+        public int total;
+        public int mistakes;
+        public int emptyAnswerAttempts;
+        public bool passed;
+    }
+
+    [Serializable]
+    class ServerReply
+    {
+        public int id;
+    }
+
     const string ResultKey = "SolarTrainer.InspectionResult";
+    const string ReportUrl = "https://jsonplaceholder.typicode.com/posts";
     const int PassScore = 2;
 
     public TMP_Text stepLabel;
@@ -54,6 +75,8 @@ public class InspectionWizard : MonoBehaviour
     WizardState _state;
     int _index;
     int[] _selected;
+    float _startTime;
+    int _emptyAnswerAttempts;
 
     void Awake()
     {
@@ -127,6 +150,8 @@ public class InspectionWizard : MonoBehaviour
         {
             case WizardState.Intro:
                 _index = 0;
+                _startTime = Time.time;
+                _emptyAnswerAttempts = 0;
                 Enter(WizardState.Question);
                 break;
 
@@ -134,6 +159,7 @@ public class InspectionWizard : MonoBehaviour
                 int choice = SelectedAnswer();
                 if (choice < 0)
                 {
+                    _emptyAnswerAttempts++;
                     feedbackText.text = "<color=#FF6B6B>Оберіть варіант відповіді.</color>";
                     return;
                 }
@@ -200,6 +226,34 @@ public class InspectionWizard : MonoBehaviour
         SetAnswersVisible(false);
         backButton.gameObject.SetActive(false);
         nextLabel.text = "Пройти знову";
+
+        var report = new WizardReport
+        {
+            sessionId = Guid.NewGuid().ToString(),
+            wizard = "Інструктаж монтажника СЕС",
+            finishedAt = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"),
+            durationSeconds = Mathf.Round((Time.time - _startTime) * 10f) / 10f,
+            score = score,
+            total = questions.Length,
+            mistakes = questions.Length - score,
+            emptyAnswerAttempts = _emptyAnswerAttempts,
+            passed = passed
+        };
+        feedbackText.text = "<color=#FFD54F>Звіт: надсилання на сервер…</color>";
+        StartCoroutine(NetClient.PostJson(ReportUrl, JsonUtility.ToJson(report), OnReportSent, OnReportFailed));
+    }
+
+    void OnReportSent(string json)
+    {
+        var reply = JsonUtility.FromJson<ServerReply>(json);
+        feedbackText.text = $"<color=#7CFC9A>Звіт надіслано на сервер (id {reply.id}).</color>";
+        Debug.Log("[Мережа] Звіт надіслано: " + json);
+    }
+
+    void OnReportFailed(string error)
+    {
+        feedbackText.text = $"<color=#FF6B6B>Помилка надсилання звіту: {error}</color>";
+        Debug.Log("[Мережа] Помилка надсилання звіту: " + error);
     }
 
     int SelectedAnswer()
