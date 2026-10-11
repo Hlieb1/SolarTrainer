@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Meta.XR.MRUtilityKit;
 using TMPro;
 using UnityEngine;
 
 public class AnchoredInfoWindow : MonoBehaviour
 {
-    const string UuidKey = "SolarTrainer.InfoWindowAnchor";
+    const string UuidKey = "SolarTrainer.InfoWindowAnchor2";
+    const float WorldLockTimeout = 3f;
 
-    public TableAttach table;
+    public AnchorPrefabSpawner tableKit;
     public Transform window;
     public TMP_Text statusText;
-    public Vector3 offsetFromModel = new Vector3(0.45f, 0.35f, 0f);
+    public Vector3 offsetFromModel = new Vector3(0f, 0.5f, 0f);
 
     public bool Restored { get; private set; }
     public bool Saved { get; private set; }
@@ -22,10 +25,16 @@ public class AnchoredInfoWindow : MonoBehaviour
         if (Guid.TryParse(PlayerPrefs.GetString(UuidKey, ""), out var uuid) && await Restore(uuid))
             return;
 
-        if (table.Table != null)
+        while (this != null && tableKit.AnchorPrefabSpawnerObjects.Count == 0)
+            await Task.Yield();
+
+        float deadline = Time.time + WorldLockTimeout;
+        while (this != null && !MRUK.Instance.IsWorldLockActive && Time.time < deadline)
+            await Task.Yield();
+        await Task.Delay(500);
+
+        if (this != null)
             CreateAnchor();
-        else
-            table.Attached += CreateAnchor;
     }
 
     async Task<bool> Restore(Guid uuid)
@@ -51,8 +60,8 @@ public class AnchoredInfoWindow : MonoBehaviour
 
     async void CreateAnchor()
     {
-        table.Attached -= CreateAnchor;
-        Vector3 position = table.target.TransformPoint(offsetFromModel);
+        Transform kit = tableKit.AnchorPrefabSpawnerObjects.Values.First().transform;
+        Vector3 position = kit.TransformPoint(offsetFromModel);
         Vector3 head = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
         Vector3 facing = Vector3.ProjectOnPlane(position - head, Vector3.up);
         if (facing.sqrMagnitude < 0.001f)
